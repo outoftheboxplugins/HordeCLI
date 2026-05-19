@@ -2,6 +2,7 @@ import { detectContext, HordeContext } from "./context";
 import { installDashboardPlugin } from "./dashboard";
 import { installServerPlugin } from "./server";
 import { installFromRoot } from "./root";
+import { PLUGINS } from "./registry";
 
 const [, , command, ...rest] = process.argv;
 
@@ -11,8 +12,11 @@ if (command === "install" || command === "i") {
   const name = rest[0];
 
   if (!name) {
-    console.error("Usage: horde-plugins-cli install <plugin-id>");
-    process.exit(1);
+    console.log("Available plugins:");
+    for (const plugin of PLUGINS) {
+      console.log(`  - ${plugin.id}`);
+    }
+    process.exit(0);
   }
 
   const context = detectContext(cwd);
