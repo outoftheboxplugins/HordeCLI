@@ -1,6 +1,7 @@
 import { appendFileSync, existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { spawnSync } from "child_process";
+import ora from "ora";
 
 function resolveNpmPackage(name: string): string {
   if (name.startsWith("@")) return name;
@@ -9,15 +10,23 @@ function resolveNpmPackage(name: string): string {
 
 export function installDashboardPlugin(packageId: string, dir: string = process.cwd()): void {
   packageId = resolveNpmPackage(packageId);
-  console.log(`Installing dashboard plugin: ${packageId}`);
+
+  const installSpinner = ora(`Installing ${packageId}`).start();
 
   const result = spawnSync("npm", ["install", "--save", "--legacy-peer-deps", packageId], {
     cwd: dir,
-    stdio: "inherit",
+    stdio: "pipe",
     shell: true,
   });
 
-  if (result.status !== 0) process.exit(result.status ?? 1);
+  if (result.status !== 0) {
+    installSpinner.fail(`${packageId} failed`);
+    console.error(result.stdout?.toString());
+    console.error(result.stderr?.toString());
+    process.exit(result.status ?? 1);
+  }
+
+  installSpinner.succeed(`${packageId} installed`);
 
   const registry = join(dir, "plugins", "registry.ts");
 
@@ -30,10 +39,10 @@ export function installDashboardPlugin(packageId: string, dir: string = process.
   const content = readFileSync(registry, "utf8");
 
   if (content.includes(importLine)) {
-    console.log(`[${packageId}] already registered`);
+    ora().info(`${packageId} already registered`);
     return;
   }
 
   appendFileSync(registry, "\n" + importLine + "\n");
-  console.log(`[${packageId}] registered in plugins/registry.ts`);
+  ora().succeed(`${packageId} registered`);
 }

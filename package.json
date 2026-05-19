@@ -25,5 +25,8 @@
    },
    "publishConfig": {
       "access": "public"
+   },
+   "dependencies": {
+      "ora": "^5.4.1"
    }
 }

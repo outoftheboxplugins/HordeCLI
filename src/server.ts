@@ -1,4 +1,5 @@
 import { spawnSync } from "child_process";
+import ora from "ora";
 
 function resolveNuGetPackage(name: string): string {
   if (name.includes(".")) return name;
@@ -7,15 +8,21 @@ function resolveNuGetPackage(name: string): string {
 
 export function installServerPlugin(packageId: string, dir: string = process.cwd()): void {
   packageId = resolveNuGetPackage(packageId);
-  console.log(`Installing server plugin: ${packageId}`);
+
+  const spinner = ora(`Installing ${packageId}`).start();
 
   const result = spawnSync("dotnet", ["add", "package", packageId], {
     cwd: dir,
-    stdio: "inherit",
+    stdio: "pipe",
     shell: true,
   });
 
-  if (result.status !== 0) process.exit(result.status ?? 1);
+  if (result.status !== 0) {
+    spinner.fail(`${packageId} failed`);
+    console.error(result.stdout?.toString());
+    console.error(result.stderr?.toString());
+    process.exit(result.status ?? 1);
+  }
 
-  console.log(`[${packageId}] installed`);
+  spinner.succeed(`${packageId} installed`);
 }
