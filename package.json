@@ -1,0 +1,29 @@
+{
+   "name": "@outoftheboxplugins/horde-plugins-cli",
+   "version": "0.0.0",
+   "description": "Install plugins into a Horde project.",
+   "license": "SEE LICENSE IN LICENSE.md",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/outoftheboxplugins/HordePluginsCLI"
+   },
+   "bin": {
+      "horde-plugins-cli": "./bin/horde-plugins-cli.js"
+   },
+   "files": [
+      "LICENSE.md",
+      "bin/horde-plugins-cli.js",
+      "dist"
+   ],
+   "scripts": {
+      "build": "tsc",
+      "prepare": "npm run build"
+   },
+   "devDependencies": {
+      "@types/node": "^20.0.0",
+      "typescript": "^5.4.0"
+   },
+   "publishConfig": {
+      "access": "public"
+   }
+}
