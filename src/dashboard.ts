@@ -26,23 +26,19 @@ export function installDashboardPlugin(packageId: string, dir: string = process.
     process.exit(result.status ?? 1);
   }
 
-  installSpinner.succeed(`${packageId} installed`);
-
   const registry = join(dir, "plugins", "registry.ts");
 
   if (!existsSync(registry)) {
-    console.error(`plugins/registry.ts not found in ${dir}`);
+    installSpinner.fail(`plugins/registry.ts not found in ${dir}`);
     process.exit(1);
   }
 
   const importLine = `import "${packageId}";`;
   const content = readFileSync(registry, "utf8");
 
-  if (content.includes(importLine)) {
-    ora().info(`${packageId} already registered`);
-    return;
+  if (!content.includes(importLine)) {
+    appendFileSync(registry, "\n" + importLine + "\n");
   }
 
-  appendFileSync(registry, "\n" + importLine + "\n");
-  ora().succeed(`${packageId} registered`);
+  installSpinner.succeed(`${packageId} installed`);
 }
