@@ -26,6 +26,10 @@ export const PLUGINS: PluginDef[] = [
     id: "email-notifications",
     serverPackages: ["OutOfTheBoxPlugins.HordeEmailNotifications"],
   },
+  {
+    id: "s3-compatible",
+    serverPackages: ["OutOfTheBoxPlugins.HordeS3Compatible"],
+  },
 ];
 
 export function findPlugin(id: string): PluginDef | undefined {
